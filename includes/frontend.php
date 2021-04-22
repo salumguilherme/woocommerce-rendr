@@ -43,15 +43,29 @@
 				$today = new \DateTime('now', new \DateTimeZone(get_option('timezone_string')));
 				$tomorrow = new \DateTime('tomorrow', new \DateTimeZone(get_option('timezone_string')));
 				$delivery_to = new \DateTime($meta['delivery_to']);
+
 				if($delivery_from->format('Ymd') != $delivery_to->format('Ymd')) {
-					$delivery_text = sprintf(__('Get it by <strong>%s<sup>%s</sup> of %s</strong>', 'wcrendr'), $delivery_to->format('l, j'), $delivery_to->format('S'), $delivery_to->format('F'));
+
+					$delivery_text = sprintf(__('Delivered by <strong>%s</strong>', 'wcrendr'), $delivery_to->format('l'));
+
 				} else {
+
+					$hour = clone $delivery_to;
+					if($delivery_to->format('i') > 0) {
+						$hour->modify('+1 hour');
+					}
+					$hour = $hour->format('g').$hour->format('a');
+
+					if($meta['type'] == 'flexible') {
+						$hour = '5pm';
+					}
+
 					if($delivery_to->format('Ymd') == $today->format('Ymd')) {
-						$delivery_text = sprintf(__('Get it <strong>Today</strong> before <strong>%s</strong>', 'wcrendr'), $delivery_to->format('H:i'));
+						$delivery_text = sprintf(__('Delivered <strong>Today</strong> by <strong>%s</strong>', 'wcrendr'), $hour);
 					} else if($delivery_to->format('Ymd') == $tomorrow->format('Ymd')) {
-						$delivery_text = sprintf(__('Get it <strong>Tomorrow</strong> by <strong>%s</strong>', 'wcrendr'), $delivery_to->format('H:i'));
+						$delivery_text = sprintf(__('Delivered by <strong>Tomorrow</strong> <strong>%s</strong>', 'wcrendr'), $hour);
 					} else {
-						$delivery_text = sprintf(__('Get it on <strong>%s<sup>%s</sup>t of %s by %s</strong>', 'wcrendr'), $delivery_to->format('l, j'), $delivery_to->format('S'), $delivery_to->format('F'), $delivery_to->format('H:i'));
+						$delivery_text = sprintf(__('Delivered by <strong>%s</strong>', 'wcrendr'), $delivery_to->format('l'));
 					}
 				}
 

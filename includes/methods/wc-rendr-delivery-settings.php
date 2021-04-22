@@ -98,15 +98,18 @@
 				'preset' => 'Order items are packed together to fit a set of one or more containers predefined below:',
 			],
 			'description' => 'Set how orders are usually packed for shipping. This will affect how many shipping labels you receive from Rendr. When selecting a predefined set of containers the plugin will automatically attempt to fit the order items into the given set of containers.',
-			'default' => 'together',
+			'default' => 'preset',
 		],
 		'packing_presets' => [
 			'type' => 'pack_presets',
+			'default' => '[{"label":"Small Box","length":"17","width":"17","height":"17"},{"label":"Medium Box","length":"35","width":"22","height":"19"},{"label":"Large Box","length":"35","width":"37","height":"19"},{"label":"XLarge Box","length":"43","width":"38","height":"30"},{"label":"XXLarge Box","length":"46","width":"41","height":"42"}]',
 		],
 		'default_dimension_title' => [
 			'type' => 'title',
 			'title' => 'Default Product Dimensions & Weight',
-			'description' => ($this->has_product_without_dimensions_or_weight() ? '<div class="notice notice-error"><p>Looks like some of your inventory does not have dimensions and weight attributes set. We highly recommend fixing those or using default values below. Orders with items that do not have their weight and dimension attributes set, cannot be sent via Rendr unless you have entered default dimensions and weight values below.</p></div>' : '').'In order to retrieve an accurate quote and delivery time all products require their dimension and weight attributes set. In case not all products have their dimension and attributes set you can define a fallback set of dimensions and weight to be used.',
+			'description' => ($this->has_product_without_dimensions_or_weight() ? '<div class="notice notice-error"><p>Looks like some of your inventory does not have dimensions and weight attributes set. We highly recommend fixing those or using default values below. Orders with items that do not have their weight and dimension attributes set, cannot be sent via Rendr unless you have entered default dimensions and weight values below.</p></div>' : '').'In order to retrieve an accurate quote and delivery time all products require their dimension and weight attributes set.<br>
+In case not all products have their dimension and attributes set you can define a fallback set of dimensions and weight to be used.<br>
+However, we recommend setting the dimension and weight on a product level as you may incur additional charges or delays if a product does not fit the dimensions/weight specified it .',
 		],
 		'default_width' => [
 			'type' => 'number',
