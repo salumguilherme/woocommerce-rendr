@@ -786,7 +786,7 @@
 				'timeout' => 10000,
 			]);
 
-			echo '<pre>'; echo print_r('get_package_rates_for_day'.$request, true);
+			echo '<pre>'; echo print_r($request, true);
 
 			if(wp_remote_retrieve_response_code($request) != 200) {
 				throw new \Exception('Invalid response code when fetching available rates.');
