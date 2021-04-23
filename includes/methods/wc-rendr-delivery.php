@@ -786,6 +786,8 @@
 				'timeout' => 10000,
 			]);
 
+			echo '<pre>'; echo print_r('get_package_rates_for_day'.$request, true);
+
 			if(wp_remote_retrieve_response_code($request) != 200) {
 				throw new \Exception('Invalid response code when fetching available rates.');
 			}
@@ -814,7 +816,7 @@
 		private function get_package_rates($package) {
 			
 			$data = $this->get_package_rates_for_day($package);
-			
+			echo '<pre>'; echo print_r($data, true);
 			$rates = [];
 
 			if(!empty($data['data'])) {
@@ -832,6 +834,7 @@
 			}
 
 			if(!empty($data['data'])) {
+				echo '<pre>'; echo print_r($data, true);
 				foreach($data['data'] as $delivery_type => $rate) {
 					if($this->get_instance_option('disable_'.$delivery_type) == 'yes') {
 						continue;
