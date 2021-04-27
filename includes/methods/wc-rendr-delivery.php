@@ -695,10 +695,10 @@
 					$_packedItems = $packedBox->getItems();
 					$packedItems = [];
 					foreach($_packedItems as $packedItem) {
-						if(!isset($packedItems[$packedItem->getItem()->getDescription()])) {
-							$packedItems[$packedItem->getItem()->getDescription()] = 1;
+						if(!isset($packedItems[$packedItem->getDescription()])) {
+							$packedItems[$packedItem->getDescription()] = 1;
 						} else {
-							$packedItems[$packedItem->getItem()->getDescription()]++;
+							$packedItems[$packedItem->getDescription()]++;
 						}
 					}
 					$packedItemsTitle = [];
