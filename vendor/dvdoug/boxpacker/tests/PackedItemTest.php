@@ -4,8 +4,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\TestItem;
@@ -19,7 +17,7 @@ class PackedItemTest extends TestCase
     /**
      * Test volume calculation.
      */
-    public function testVolumeCalculation(): void
+    public function testVolumeCalculation()
     {
         $packedItem = new PackedItem(new TestItem('Item', 1, 1, 0, 0, false), 0, 0, 0, 3, 5, 7);
         self::assertSame(105, $packedItem->getVolume());

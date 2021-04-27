@@ -4,13 +4,9 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\TestItem;
-use function json_decode;
-use function json_encode;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -18,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  */
 class OrientatedItemTest extends TestCase
 {
-    public function testSerialize(): void
+    public function testSerialize()
     {
         $item = new OrientatedItem(new TestItem('Test', 1, 2, 3, 4, false), 1, 2, 3);
 

@@ -13,12 +13,7 @@ If you don't want to use Composer, the code is available to download from `GitHu
 
 Requirements
 ------------
-BoxPacker v3 is compatible with PHP 7.1+
-
-.. note::
-
-    Still running an older version of PHP? No problem! BoxPacker v2 is compatible with PHP 5.4 and up, is just as
-    production-ready, and is actively maintained.
+BoxPacker is compatible with all versions of PHP 5.4+
 
 Versioning
 ----------

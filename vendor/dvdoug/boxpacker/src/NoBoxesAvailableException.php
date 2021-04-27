@@ -5,8 +5,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use RuntimeException;
@@ -23,13 +21,13 @@ class NoBoxesAvailableException extends RuntimeException
     /**
      * NoBoxesAvailableException constructor.
      */
-    public function __construct(string $message, Item $item)
+    public function __construct($message, Item $item)
     {
         $this->item = $item;
         parent::__construct($message);
     }
 
-    public function getItem(): Item
+    public function getItem()
     {
         return $this->item;
     }

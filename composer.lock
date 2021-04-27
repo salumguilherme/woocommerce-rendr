@@ -1,9 +1,14 @@
 {
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "c0eaf727b648d416b5931425de2dc279",
     "packages": [
         {
             "name": "dvdoug/boxpacker",
             "version": "2.7.1",
-            "version_normalized": "2.7.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dvdoug/BoxPacker.git",
@@ -26,9 +31,7 @@
                 "monolog/monolog": "^1.25||^2.0",
                 "phpunit/phpunit": "^4.8.36||^5.7.27||^6.5.14||^7.5.20||^8.5.2||^9.0"
             },
-            "time": "2020-06-11T21:02:04+00:00",
             "type": "library",
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "DVDoug\\BoxPacker\\": "src/",
@@ -71,12 +74,11 @@
                     "type": "github"
                 }
             ],
-            "install-path": "../dvdoug/boxpacker"
+            "time": "2020-06-11T21:02:04+00:00"
         },
         {
             "name": "psr/log",
             "version": "1.1.3",
-            "version_normalized": "1.1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
@@ -91,14 +93,12 @@
             "require": {
                 "php": ">=5.3.0"
             },
-            "time": "2020-03-23T09:12:05+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-master": "1.1.x-dev"
                 }
             },
-            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Psr\\Log\\": "Psr/Log/"
@@ -124,9 +124,16 @@
             "support": {
                 "source": "https://github.com/php-fig/log/tree/1.1.3"
             },
-            "install-path": "../psr/log"
+            "time": "2020-03-23T09:12:05+00:00"
         }
     ],
-    "dev": true,
-    "dev-package-names": []
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.0.0"
 }

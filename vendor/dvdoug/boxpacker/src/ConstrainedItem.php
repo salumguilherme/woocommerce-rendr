@@ -4,8 +4,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 /**
@@ -19,6 +17,11 @@ interface ConstrainedItem extends Item
 {
     /**
      * Hook for user implementation of item-specific constraints, e.g. max <x> batteries per box.
+     *
+     * @param ItemList $alreadyPackedItems
+     * @param Box      $box
+     *
+     * @return bool
      */
-    public function canBePackedInBox(PackedItemList $alreadyPackedItems, Box $box): bool;
+    public function canBePackedInBox(ItemList $alreadyPackedItems, Box $box);
 }

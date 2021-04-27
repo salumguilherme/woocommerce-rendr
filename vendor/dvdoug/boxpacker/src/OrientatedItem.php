@@ -4,14 +4,9 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
-use function atan;
 use JsonSerializable;
-use function min;
-use function sort;
 
 /**
  * An item to be packed.
@@ -57,8 +52,13 @@ class OrientatedItem implements JsonSerializable
 
     /**
      * Constructor.
+     *
+     * @param Item $item
+     * @param int  $width
+     * @param int  $length
+     * @param int  $depth
      */
-    public function __construct(Item $item, int $width, int $length, int $depth)
+    public function __construct(Item $item, $width, $length, $depth)
     {
         $this->item = $item;
         $this->width = $width;
@@ -72,40 +72,50 @@ class OrientatedItem implements JsonSerializable
 
     /**
      * Item.
+     *
+     * @return Item
      */
-    public function getItem(): Item
+    public function getItem()
     {
         return $this->item;
     }
 
     /**
      * Item width in mm in it's packed orientation.
+     *
+     * @return int
      */
-    public function getWidth(): int
+    public function getWidth()
     {
         return $this->width;
     }
 
     /**
      * Item length in mm in it's packed orientation.
+     *
+     * @return int
      */
-    public function getLength(): int
+    public function getLength()
     {
         return $this->length;
     }
 
     /**
      * Item depth in mm in it's packed orientation.
+     *
+     * @return int
      */
-    public function getDepth(): int
+    public function getDepth()
     {
         return $this->depth;
     }
 
     /**
      * Calculate the surface footprint of the current orientation.
+     *
+     * @return int
      */
-    public function getSurfaceFootprint(): int
+    public function getSurfaceFootprint()
     {
         return $this->surfaceFootprint;
     }
@@ -114,12 +124,18 @@ class OrientatedItem implements JsonSerializable
      * Is this item stable (low centre of gravity), calculated as if the tipping point is >15 degrees.
      *
      * N.B. Assumes equal weight distribution.
+     *
+     * @return bool
      */
-    public function isStable(): bool
+    public function isStable()
     {
         $cacheKey = $this->width . '|' . $this->length . '|' . $this->depth;
 
-        return static::$stabilityCache[$cacheKey] ?? (static::$stabilityCache[$cacheKey] = atan(min($this->length, $this->width) / ($this->depth ?: 1)) > 0.261);
+        if (!isset(static::$stabilityCache[$cacheKey])) {
+            static::$stabilityCache[$cacheKey] = (atan(min($this->length, $this->width) / ($this->depth ?: 1)) > 0.261);
+        }
+
+         return static::$stabilityCache[$cacheKey];
     }
 
     /**
@@ -127,7 +143,7 @@ class OrientatedItem implements JsonSerializable
      *
      * @internal
      */
-    public function isSameDimensions(Item $item): bool
+    public function isSameDimensions(Item $item)
     {
         if ($item === $this->item) {
             return true;
@@ -152,7 +168,10 @@ class OrientatedItem implements JsonSerializable
         ];
     }
 
-    public function __toString(): string
+    /**
+     * @return string
+     */
+    public function __toString()
     {
         return $this->width . '|' . $this->length . '|' . $this->depth;
     }

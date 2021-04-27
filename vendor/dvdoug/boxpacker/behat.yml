@@ -4,23 +4,23 @@ default:
       paths:
         - '%paths.base%/features/common'
       contexts: [ PackerContext ]
-    infallible_packer:
-      paths:
-        - '%paths.base%/features/common'
-        - '%paths.base%/features/infallible'
-      contexts: [ InfalliblePackerContext ]
 
   extensions:
-    DVDoug\Behat\CodeCoverage\Extension:
+    LeanPHP\Behat\CodeCoverage\Extension:
+      auth: ~
+      drivers:
+        - local
       filter:
-        include:
-          directories:
-            'src': ~
-      reports:
-        clover:
-          target: build/coverage-behat/clover.xml
-        html:
-          target: build/coverage-behat
-        text:
-          showColors: true
-          showUncoveredFiles: true
+        forceCoversAnnotation:                false
+        mapTestClassNameToCoveredClassName:   false
+        whitelist:
+          addUncoveredFilesFromWhitelist:     true
+          processUncoveredFilesFromWhitelist: true
+          include:
+            directories:
+              'src':
+                prefix: ''
+      report:
+        format: clover
+        options:
+          target: build/behat.clover

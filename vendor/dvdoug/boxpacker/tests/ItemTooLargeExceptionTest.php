@@ -4,8 +4,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\TestItem;
@@ -19,7 +17,7 @@ class ItemTooLargeExceptionTest extends TestCase
     /**
      * Test that the offending item can be retrieved from the object.
      */
-    public function testCanGetItem(): void
+    public function testCanGetItem()
     {
         $item = new TestItem('Item 1', 2500, 2500, 20, 2000, true);
 

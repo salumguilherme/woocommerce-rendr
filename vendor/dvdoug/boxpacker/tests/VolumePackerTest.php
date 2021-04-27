@@ -4,11 +4,8 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
-use function array_fill;
 use DVDoug\BoxPacker\Test\ConstrainedPlacementByCountTestItem;
 use DVDoug\BoxPacker\Test\ConstrainedPlacementNoStackingTestItem;
 use DVDoug\BoxPacker\Test\ConstrainedTestItem;
@@ -21,7 +18,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #79.
      */
-    public function testUsedDimensionsCalculatedCorrectly(): void
+    public function testUsedDimensionsCalculatedCorrectly()
     {
         $box = new TestBox('Bundle', 75, 15, 15, 0, 75, 15, 15, 30);
         $itemList = new ItemList();
@@ -42,7 +39,7 @@ class VolumePackerTest extends TestCase
     /**
      * Test that constraint handling works correctly.
      */
-    public function testLegacyConstraints(): void
+    public function testLegacyConstraints()
     {
         // first a regular item
         $packer = new Packer();
@@ -66,7 +63,7 @@ class VolumePackerTest extends TestCase
     /**
      * Test that constraint handling works correctly.
      */
-    public function testNewConstraintMatchesLegacy(): void
+    public function testNewConstraintMatchesLegacy()
     {
         // first a regular item
         $packer = new Packer();
@@ -90,7 +87,7 @@ class VolumePackerTest extends TestCase
     /**
      * Test that constraint handling works correctly.
      */
-    public function testNewConstraint(): void
+    public function testNewConstraint()
     {
         // first a regular item
         $packer = new Packer();
@@ -113,7 +110,7 @@ class VolumePackerTest extends TestCase
     /**
      * Test an infinite loop doesn't come back.
      */
-    public function testIssue14(): void
+    public function testIssue14()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('29x1x23Box', 29, 1, 23, 0, 29, 1, 23, 100));
@@ -129,7 +126,7 @@ class VolumePackerTest extends TestCase
     /**
      * Test identical items keep their orientation (with box length > width).
      */
-    public function testIssue47A(): void
+    public function testIssue47A()
     {
         $box = new TestBox('165x225x25Box', 165, 225, 25, 0, 165, 225, 25, 100);
         $item = new TestItem('20x69x20Item', 20, 69, 20, 0, true);
@@ -147,7 +144,7 @@ class VolumePackerTest extends TestCase
     /**
      * Test identical items keep their orientation (with box length < width).
      */
-    public function testIssue47B(): void
+    public function testIssue47B()
     {
         $box = new TestBox('165x225x25Box', 165, 225, 25, 0, 165, 225, 25, 100);
         $item = new TestItem('20x69x20Item', 69, 20, 20, 0, true);
@@ -166,7 +163,7 @@ class VolumePackerTest extends TestCase
      * Test that identical orientation doesn't survive change of row
      * (7 side by side, then 2 side by side rotated).
      */
-    public function testAllowsRotatedBoxesInNewRow(): void
+    public function testAllowsRotatedBoxesInNewRow()
     {
         $box = new TestBox('40x70x30InternalBox', 40, 70, 30, 0, 40, 70, 30, 1000);
         $item = new TestItem('30x10x30item', 30, 10, 30, 0, true);
@@ -184,7 +181,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #124.
      */
-    public function testUnpackedSpaceInsideLayersIsFilled(): void
+    public function testUnpackedSpaceInsideLayersIsFilled()
     {
         $box = new TestBox('Box', 4, 14, 11, 0, 4, 14, 11, 100);
         $itemList = new ItemList();
@@ -212,7 +209,7 @@ class VolumePackerTest extends TestCase
     /**
      * Test stability of items is calculated appropriately.
      */
-    public function testIssue148(): void
+    public function testIssue148()
     {
         $box = new TestBox('Box', 27, 37, 22, 100, 25, 36, 21, 15000);
         $item = new TestItem('Item', 6, 12, 20, 100, false);
@@ -242,7 +239,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #147.
      */
-    public function testIssue147A(): void
+    public function testIssue147A()
     {
         $box = new TestBox('Box', 250, 1360, 260, 0, 250, 1360, 260, 30000);
         $itemList = new ItemList();
@@ -260,7 +257,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #147.
      */
-    public function testIssue147B(): void
+    public function testIssue147B()
     {
         $box = new TestBox('Box', 400, 200, 500, 0, 400, 200, 500, 10000);
         $itemList = new ItemList();
@@ -286,7 +283,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #161.
      */
-    public function testIssue161(): void
+    public function testIssue161()
     {
         $box = new TestBox('Box', 240, 150, 180, 0, 240, 150, 180, 10000);
         $item1 = new TestItem('Item 1', 70, 70, 95, 0, false);
@@ -318,7 +315,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #164.
      */
-    public function testIssue164(): void
+    public function testIssue164()
     {
         $box = new TestBox('Box', 820, 820, 830, 0, 820, 820, 830, 10000);
 
@@ -342,7 +339,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #174.
      */
-    public function testIssue174(): void
+    public function testIssue174()
     {
         $box = new TestBox('Box', 0, 0, 0, 10, 5000, 5000, 5000, 10000);
         $items = new ItemList();
@@ -363,23 +360,8 @@ class VolumePackerTest extends TestCase
 
     /**
      * From issue #172.
-     * @group efficiency
      */
-    public function testIssue172A(): void
-    {
-        $box = new TestBox('Box', 800, 1200, 1300, 0, 800, 1200, 1300, 500000);
-        $items = array_fill(0, 8928, new TestItem('Larger', 150, 110, 5, 56, false));
-
-        $volumePacker = new VolumePacker($box, ItemList::fromArray($items, true));
-        $packedBox = $volumePacker->pack();
-
-        self::assertCount(8928, $packedBox->getItems());
-    }
-
-    /**
-     * From issue #172.
-     */
-    public function testIssue172B(): void
+    public function testIssue172B()
     {
         $box = new TestBox('Box', 18, 18, 24, 0, 18, 18, 24, 10000);
 
@@ -403,7 +385,7 @@ class VolumePackerTest extends TestCase
     /**
      * From issue #186.
      */
-    public function testPassedInItemListKeepsItems(): void
+    public function testPassedInItemListKeepsItems()
     {
         $box = new TestBox('Box', 18, 18, 24, 0, 18, 18, 24, 10000);
 
@@ -420,39 +402,9 @@ class VolumePackerTest extends TestCase
     }
 
     /**
-     * From issue #190.
-     */
-    public function testOrientationDecisions(): void
-    {
-        $box = new TestBox('Box', 25, 25, 20, 0, 25, 25, 20, 1000);
-        $items = new ItemList();
-        $item = new TestItem('Item', 5, 6, 20, 20, true);
-        for ($i = 0; $i < 20; ++$i) {
-            $items->insert($item);
-        }
-
-        $volumePacker = new VolumePacker($box, $items);
-        $packedBox = $volumePacker->pack();
-
-        self::assertCount(20, $packedBox->getItems());
-
-        $box = new TestBox('Box', 25, 25, 20, 0, 25, 25, 20, 1000);
-        $items = new ItemList();
-        $item = new TestItem('Item', 20, 5, 6, 20, false);
-        for ($i = 0; $i < 20; ++$i) {
-            $items->insert($item);
-        }
-
-        $volumePacker = new VolumePacker($box, $items);
-        $packedBox = $volumePacker->pack();
-
-        self::assertCount(20, $packedBox->getItems());
-    }
-
-    /**
      * From issue #175.
      */
-    public function testIssue175(): void
+    public function testIssue175()
     {
         $this->markTestSkipped(); //mark skipped until fixed
         $box = new TestBox('Box', 40, 40, 40, 0, 40, 40, 40, 1000);

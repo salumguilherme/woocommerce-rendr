@@ -4,13 +4,8 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
-use function max;
-use function min;
-use const PHP_INT_MAX;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 
@@ -84,7 +79,7 @@ class OrientatedItemSorter implements LoggerAwareInterface
      */
     private $prevPackedItemList;
 
-    public function __construct(OrientatedItemFactory $factory, bool $singlePassMode, int $widthLeft, int $lengthLeft, int $depthLeft, ItemList $nextItems, int $rowLength, int $x, int $y, int $z, PackedItemList $prevPackedItemList)
+    public function __construct(OrientatedItemFactory $factory, $singlePassMode, $widthLeft, $lengthLeft, $depthLeft, ItemList $nextItems, $rowLength, $x, $y, $z, PackedItemList $prevPackedItemList)
     {
         $this->orientatedItemFactory = $factory;
         $this->singlePassMode = $singlePassMode;
@@ -133,10 +128,10 @@ class OrientatedItemSorter implements LoggerAwareInterface
         $orientationAMinGap = min($orientationAWidthLeft, $orientationALengthLeft);
         $orientationBMinGap = min($orientationBWidthLeft, $orientationBLengthLeft);
 
-        return $orientationAMinGap <=> $orientationBMinGap ?: $a->getSurfaceFootprint() <=> $b->getSurfaceFootprint();
+        return ($orientationAMinGap - $orientationBMinGap) ?: ($a->getSurfaceFootprint() - $b->getSurfaceFootprint());
     }
 
-    private function lookAheadDecider(ItemList $nextItems, OrientatedItem $a, OrientatedItem $b, int $orientationAWidthLeft, int $orientationBWidthLeft, int $widthLeft, int $lengthLeft, int $depthLeft, int $rowLength, int $x, int $y, int $z, PackedItemList $prevPackedItemList): int
+    private function lookAheadDecider(ItemList $nextItems, OrientatedItem $a, OrientatedItem $b, $orientationAWidthLeft, $orientationBWidthLeft, $widthLeft, $lengthLeft, $depthLeft, $rowLength, $x, $y, $z, PackedItemList $prevPackedItemList)
     {
         if ($nextItems->count() === 0) {
             return 0;
@@ -155,7 +150,7 @@ class OrientatedItemSorter implements LoggerAwareInterface
         $additionalPackedA = $this->calculateAdditionalItemsPackedWithThisOrientation($a, $nextItems, $widthLeft, $lengthLeft, $depthLeft, $rowLength);
         $additionalPackedB = $this->calculateAdditionalItemsPackedWithThisOrientation($b, $nextItems, $widthLeft, $lengthLeft, $depthLeft, $rowLength);
 
-        return $additionalPackedB <=> $additionalPackedA ?: 0;
+        return ($additionalPackedB - $additionalPackedA) ?: 0;
     }
 
     /**
@@ -167,11 +162,11 @@ class OrientatedItemSorter implements LoggerAwareInterface
     protected function calculateAdditionalItemsPackedWithThisOrientation(
         OrientatedItem $prevItem,
         ItemList $nextItems,
-        int $originalWidthLeft,
-        int $originalLengthLeft,
-        int $depthLeft,
-        int $currentRowLengthBeforePacking
-    ): int {
+        $originalWidthLeft,
+        $originalLengthLeft,
+        $depthLeft,
+        $currentRowLengthBeforePacking
+    ) {
         if ($this->singlePassMode) {
             return 0;
         }
@@ -192,7 +187,7 @@ class OrientatedItemSorter implements LoggerAwareInterface
             '|'
             . $depthLeft;
 
-        foreach ($itemsToPack as $itemToPack) {
+        foreach (clone $itemsToPack as $itemToPack) {
             $cacheKey .= '|' .
                 $itemToPack->getWidth() .
                 '|' .
@@ -207,18 +202,18 @@ class OrientatedItemSorter implements LoggerAwareInterface
 
         if (!isset(static::$lookaheadCache[$cacheKey])) {
             $tempBox = new WorkingVolume($originalWidthLeft - $prevItem->getWidth(), $currentRowLength, $depthLeft, PHP_INT_MAX);
-            $tempPacker = new VolumePacker($tempBox, $itemsToPack);
+            $tempPacker = new VolumePacker($tempBox, clone $itemsToPack);
             $tempPacker->setSinglePassMode(true);
             $remainingRowPacked = $tempPacker->pack();
 
-            $itemsToPack->removePackedItems($remainingRowPacked->getItems());
+            $itemsToPack->removePackedItems($remainingRowPacked->getPackedItems());
 
             $tempBox = new WorkingVolume($originalWidthLeft, $originalLengthLeft - $currentRowLength, $depthLeft, PHP_INT_MAX);
-            $tempPacker = new VolumePacker($tempBox, $itemsToPack);
+            $tempPacker = new VolumePacker($tempBox, clone $itemsToPack);
             $tempPacker->setSinglePassMode(true);
             $nextRowsPacked = $tempPacker->pack();
 
-            $itemsToPack->removePackedItems($nextRowsPacked->getItems());
+            $itemsToPack->removePackedItems($nextRowsPacked->getPackedItems());
 
             $packedCount = $nextItems->count() - $itemsToPack->count();
             $this->logger->debug('Lookahead with orientation', ['packedCount' => $packedCount, 'orientatedItem' => $prevItem]);
@@ -229,7 +224,7 @@ class OrientatedItemSorter implements LoggerAwareInterface
         return static::$lookaheadCache[$cacheKey];
     }
 
-    private function exactFitDecider(int $dimensionALeft, int $dimensionBLeft)
+    private function exactFitDecider($dimensionALeft, $dimensionBLeft)
     {
         if ($dimensionALeft === 0 && $dimensionBLeft > 0) {
             return -1;

@@ -4,17 +4,11 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
-use function array_merge;
-use function iterator_to_array;
-use function max;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use function sort;
 
 /**
  * Layer packer.
@@ -65,13 +59,13 @@ class LayerPacker implements LoggerAwareInterface
     /**
      * Sets a logger.
      */
-    public function setLogger(LoggerInterface $logger): void
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
         $this->orientatedItemFactory->setLogger($logger);
     }
 
-    public function setSinglePassMode(bool $singlePassMode): void
+    public function setSinglePassMode($singlePassMode)
     {
         $this->singlePassMode = $singlePassMode;
         $this->orientatedItemFactory->setSinglePassMode($singlePassMode);
@@ -80,7 +74,7 @@ class LayerPacker implements LoggerAwareInterface
     /**
      * Pack items into an individual vertical layer.
      */
-    public function packLayer(ItemList &$items, PackedItemList $packedItemList, array $layers, int $z, int $layerWidth, int $lengthLeft, int $depthLeft, int $guidelineLayerDepth): PackedLayer
+    public function packLayer(ItemList &$items, PackedItemList $packedItemList, array $layers, $z, $layerWidth, $lengthLeft, $depthLeft, $guidelineLayerDepth)
     {
         $layer = new PackedLayer();
         $prevItem = null;
@@ -113,7 +107,7 @@ class LayerPacker implements LoggerAwareInterface
 
                 $prevItem = $orientatedItem;
                 if ($items->count() === 0) {
-                    $items = ItemList::fromArray(array_merge($skippedItems, iterator_to_array($items)), true);
+                    $items = ItemList::fromArray(array_merge($skippedItems, iterator_to_array($items)));
                     $skippedItems = [];
                 }
                 continue;
@@ -135,7 +129,7 @@ class LayerPacker implements LoggerAwareInterface
                 $y += $rowLength;
                 $x = $rowLength = 0;
                 $skippedItems[] = $itemToPack;
-                $items = ItemList::fromArray(array_merge($skippedItems, iterator_to_array($items)), true);
+                $items = ItemList::fromArray(array_merge($skippedItems, iterator_to_array($items)));
                 $skippedItems = [];
                 $prevItem = null;
                 continue;
@@ -144,7 +138,7 @@ class LayerPacker implements LoggerAwareInterface
             $this->logger->debug('no items fit, so starting next vertical layer');
             $skippedItems[] = $itemToPack;
 
-            $items = ItemList::fromArray(array_merge($skippedItems, iterator_to_array($items)), true);
+            $items = ItemList::fromArray(array_merge($skippedItems, iterator_to_array($items)));
 
             return $layer;
         }
@@ -152,7 +146,7 @@ class LayerPacker implements LoggerAwareInterface
         return $layer;
     }
 
-    private function packVerticallyInsideItemFootprint(PackedLayer $layer, PackedItem $packedItem, PackedItemList $packedItemList, ItemList &$items, int &$remainingWeightAllowed, int $guidelineLayerDepth, int $rowLength, int $x, int $y, int $z): void
+    private function packVerticallyInsideItemFootprint(PackedLayer $layer, PackedItem $packedItem, PackedItemList $packedItemList, ItemList &$items, &$remainingWeightAllowed, $guidelineLayerDepth, $rowLength, $x, $y, $z)
     {
         $stackableDepth = ($guidelineLayerDepth ?: $layer->getDepth()) - $packedItem->getDepth();
         $stackedZ = $z + $packedItem->getDepth();
@@ -183,24 +177,24 @@ class LayerPacker implements LoggerAwareInterface
                 $stackSkippedItems[] = $items->extract();
             }
         }
-        $items = ItemList::fromArray(array_merge($stackSkippedItems, iterator_to_array($items)), true);
+        $items = ItemList::fromArray(array_merge($stackSkippedItems, iterator_to_array($items)));
     }
 
     /**
      * As well as purely dimensional constraints, there are other constraints that need to be met
      * e.g. weight limits or item-specific restrictions (e.g. max <x> batteries per box).
      */
-    private function checkNonDimensionalConstraints(Item $itemToPack, int $remainingWeightAllowed, PackedItemList $packedItemList): bool
+    private function checkNonDimensionalConstraints(Item $itemToPack, $remainingWeightAllowed, PackedItemList $packedItemList)
     {
         $customConstraintsOK = true;
         if ($itemToPack instanceof ConstrainedItem && !$this->box instanceof WorkingVolume) {
-            $customConstraintsOK = $itemToPack->canBePackedInBox($packedItemList, $this->box);
+            $customConstraintsOK = $itemToPack->canBePackedInBox($packedItemList->asItemList(), $this->box);
         }
 
         return $customConstraintsOK && $itemToPack->getWeight() <= $remainingWeightAllowed;
     }
 
-    private function getRemainingWeightAllowed(array $layers): int
+    private function getRemainingWeightAllowed(array $layers)
     {
         $remainingWeightAllowed = $this->box->getMaxWeight() - $this->box->getEmptyWeight();
         foreach ($layers as $layer) {
@@ -213,7 +207,7 @@ class LayerPacker implements LoggerAwareInterface
     /**
      * Compare two items to see if they have same dimensions.
      */
-    private static function isSameDimensions(Item $itemA, Item $itemB): bool
+    private static function isSameDimensions(Item $itemA, Item $itemB)
     {
         if ($itemA === $itemB) {
             return true;

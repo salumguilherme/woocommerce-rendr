@@ -4,24 +4,12 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
-use function array_filter;
-use function array_map;
-use function array_merge;
-use function array_sum;
-use function count;
-use function iterator_to_array;
-use function max;
-use const PHP_INT_MAX;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Psr\Log\NullLogger;
-use SplObjectStorage;
-use function usort;
 
 /**
  * Actual packer.
@@ -41,26 +29,23 @@ class WeightRedistributor implements LoggerAwareInterface
     private $boxes;
 
     /**
-     * Quantities available of each box type.
-     *
-     * @var SplObjectStorage|int[]
-     */
-    private $boxesQtyAvailable;
-
-    /**
      * Constructor.
+     * @param BoxList $boxList
      */
-    public function __construct(BoxList $boxList, SplObjectStorage $boxQuantitiesAvailable)
+    public function __construct(BoxList $boxList)
     {
-        $this->boxes = $boxList;
-        $this->boxesQtyAvailable = $boxQuantitiesAvailable;
+        $this->boxes = clone $boxList;
         $this->logger = new NullLogger();
     }
 
     /**
      * Given a solution set of packed boxes, repack them to achieve optimum weight distribution.
+     *
+     * @param PackedBoxList $originalBoxes
+     *
+     * @return PackedBoxList
      */
-    public function redistributeWeight(PackedBoxList $originalBoxes): PackedBoxList
+    public function redistributeWeight(PackedBoxList $originalBoxes)
     {
         $targetWeight = $originalBoxes->getMeanItemWeight();
         $this->logger->log(LogLevel::DEBUG, "repacking for weight distribution, weight variance {$originalBoxes->getWeightVariance()}, target weight {$targetWeight}");
@@ -69,7 +54,7 @@ class WeightRedistributor implements LoggerAwareInterface
         $boxes = iterator_to_array($originalBoxes);
 
         usort($boxes, static function (PackedBox $boxA, PackedBox $boxB) {
-            return $boxB->getWeight() <=> $boxA->getWeight();
+            return $boxB->getWeight() - $boxA->getWeight();
         });
 
         do {
@@ -83,7 +68,7 @@ class WeightRedistributor implements LoggerAwareInterface
 
                     $iterationSuccessful = $this->equaliseWeight($boxA, $boxB, $targetWeight);
                     if ($iterationSuccessful) {
-                        $boxes = array_filter($boxes, static function (?PackedBox $box) { //remove any now-empty boxes from the list
+                        $boxes = array_filter($boxes, static function ($box) { //remove any now-empty boxes from the list
                             return $box instanceof PackedBox;
                         });
                         break 2;
@@ -102,9 +87,13 @@ class WeightRedistributor implements LoggerAwareInterface
     /**
      * Attempt to equalise weight distribution between 2 boxes.
      *
+     * @param PackedBox $boxA
+     * @param PackedBox $boxB
+     * @param float     $targetWeight
+     *
      * @return bool was the weight rebalanced?
      */
-    private function equaliseWeight(PackedBox &$boxA, PackedBox &$boxB, float $targetWeight): bool
+    private function equaliseWeight(PackedBox &$boxA, PackedBox &$boxB, $targetWeight)
     {
         $anyIterationSuccessful = false;
 
@@ -116,15 +105,15 @@ class WeightRedistributor implements LoggerAwareInterface
             $underWeightBox = $boxA;
         }
 
-        $overWeightBoxItems = $overWeightBox->getItems()->asItemArray();
-        $underWeightBoxItems = $underWeightBox->getItems()->asItemArray();
+        $overWeightBoxItems = $overWeightBox->getItems()->asArray();
+        $underWeightBoxItems = $underWeightBox->getItems()->asArray();
 
         foreach ($overWeightBoxItems as $key => $overWeightItem) {
             if (!static::wouldRepackActuallyHelp($overWeightBoxItems, $overWeightItem, $underWeightBoxItems, $targetWeight)) {
                 continue; // moving this item would harm more than help
             }
 
-            $newLighterBoxes = $this->doVolumeRepack(array_merge($underWeightBoxItems, [$overWeightItem]), $underWeightBox->getBox());
+            $newLighterBoxes = $this->doVolumeRepack(array_merge($underWeightBoxItems, [$overWeightItem]));
             if ($newLighterBoxes->count() !== 1) {
                 continue; //only want to move this item if it still fits in a single box
             }
@@ -134,22 +123,16 @@ class WeightRedistributor implements LoggerAwareInterface
             if (count($overWeightBoxItems) === 1) { //sometimes a repack can be efficient enough to eliminate a box
                 $boxB = $newLighterBoxes->top();
                 $boxA = null;
-                $this->boxesQtyAvailable[$boxB->getBox()] = $this->boxesQtyAvailable[$boxB->getBox()] - 1;
-                $this->boxesQtyAvailable[$overWeightBox->getBox()] = $this->boxesQtyAvailable[$overWeightBox->getBox()] + 1;
 
                 return true;
             }
 
             unset($overWeightBoxItems[$key]);
-            $newHeavierBoxes = $this->doVolumeRepack($overWeightBoxItems, $overWeightBox->getBox());
+            $newHeavierBoxes = $this->doVolumeRepack($overWeightBoxItems);
             if (count($newHeavierBoxes) !== 1) {
                 continue; //this should never happen, if we can pack n+1 into the box, we should be able to pack n
             }
 
-            $this->boxesQtyAvailable[$boxA->getBox()] = $this->boxesQtyAvailable[$boxA->getBox()] + 1;
-            $this->boxesQtyAvailable[$boxB->getBox()] = $this->boxesQtyAvailable[$boxB->getBox()] + 1;
-            $this->boxesQtyAvailable[$newHeavierBoxes->top()->getBox()] = $this->boxesQtyAvailable[$newHeavierBoxes->top()->getBox()] - 1;
-            $this->boxesQtyAvailable[$newLighterBoxes->top()->getBox()] = $this->boxesQtyAvailable[$newLighterBoxes->top()->getBox()] - 1;
             $underWeightBox = $boxB = $newLighterBoxes->top();
             $boxA = $newHeavierBoxes->top();
 
@@ -161,15 +144,15 @@ class WeightRedistributor implements LoggerAwareInterface
 
     /**
      * Do a volume repack of a set of items.
+     *
+     * @param array $items
+     *
+     * @return PackedBoxList
      */
-    private function doVolumeRepack(iterable $items, Box $currentBox): PackedBoxList
+    private function doVolumeRepack($items)
     {
         $packer = new Packer();
         $packer->setBoxes($this->boxes); // use the full set of boxes to allow smaller/larger for full efficiency
-        foreach ($this->boxes as $box) {
-            $packer->setBoxQuantity($box, $this->boxesQtyAvailable[$box]);
-        }
-        $packer->setBoxQuantity($currentBox, max(PHP_INT_MAX, $this->boxesQtyAvailable[$currentBox] + 1));
         $packer->setItems($items);
 
         return $packer->doVolumePacking(true, true);
@@ -180,7 +163,7 @@ class WeightRedistributor implements LoggerAwareInterface
      * boxes, or sometimes the box used for the now lighter set of items actually weighs more when empty causing
      * an increase in total weight.
      */
-    private static function wouldRepackActuallyHelp(array $overWeightBoxItems, Item $overWeightItem, array $underWeightBoxItems, float $targetWeight): bool
+    private static function wouldRepackActuallyHelp(array $overWeightBoxItems, Item $overWeightItem, array $underWeightBoxItems, $targetWeight)
     {
         $overWeightItemsWeight = array_sum(array_map(static function (Item $item) {return $item->getWeight(); }, $overWeightBoxItems));
         $underWeightItemsWeight = array_sum(array_map(static function (Item $item) {return $item->getWeight(); }, $underWeightBoxItems));
@@ -195,8 +178,8 @@ class WeightRedistributor implements LoggerAwareInterface
         return $newVariance < $oldVariance;
     }
 
-    private static function calculateVariance(int $boxAWeight, int $boxBWeight)
+    private static function calculateVariance($boxAWeight, $boxBWeight)
     {
-        return ($boxAWeight - (($boxAWeight + $boxBWeight) / 2)) ** 2; //don't need to calculate B and ÷ 2, for a 2-item population the difference from mean is the same for each box
+        return pow($boxAWeight - (($boxAWeight + $boxBWeight) / 2), 2); //don't need to calculate B and ÷ 2, for a 2-item population the difference from mean is the same for each box
     }
 }

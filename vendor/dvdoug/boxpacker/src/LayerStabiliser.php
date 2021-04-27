@@ -4,11 +4,7 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
-
-use function usort;
 
 /**
  * Applies load stability to generated result.
@@ -23,7 +19,7 @@ class LayerStabiliser
      *
      * @return PackedLayer[]
      */
-    public function stabilise(array $packedLayers): array
+    public function stabilise(array $packedLayers)
     {
         // first re-order according to footprint
         $stabilisedLayers = [];
@@ -47,8 +43,14 @@ class LayerStabiliser
         return $stabilisedLayers;
     }
 
-    private function compare(PackedLayer $layerA, PackedLayer $layerB): int
+    /**
+     * @param PackedLayer $layerA
+     * @param PackedLayer $layerB
+     *
+     * @return int
+     */
+    private function compare(PackedLayer $layerA, PackedLayer $layerB)
     {
-        return ($layerB->getFootprint() <=> $layerA->getFootprint()) ?: ($layerB->getDepth() <=> $layerA->getDepth());
+        return ($layerB->getFootprint() - $layerA->getFootprint()) ?: ($layerB->getDepth() - $layerA->getDepth());
     }
 }

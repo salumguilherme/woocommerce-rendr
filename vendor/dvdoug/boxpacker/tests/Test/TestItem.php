@@ -4,7 +4,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
 
 namespace DVDoug\BoxPacker\Test;
 
@@ -45,8 +44,12 @@ class TestItem implements Item, JsonSerializable
     private $keepFlat;
 
     /**
+     * @var int
+     */
+    private $volume;
+
+    /*
      * Test objects that recurse.
-     *
      * @var stdClass
      */
     private $a;
@@ -60,14 +63,21 @@ class TestItem implements Item, JsonSerializable
 
     /**
      * TestItem constructor.
+     *
+     * @param string $description
+     * @param int    $width
+     * @param int    $length
+     * @param int    $depth
+     * @param int    $weight
+     * @param bool   $keepFlat
      */
     public function __construct(
-        string $description,
-        int $width,
-        int $length,
-        int $depth,
-        int $weight,
-        bool $keepFlat)
+        $description,
+        $width,
+        $length,
+        $depth,
+        $weight,
+        $keepFlat)
     {
         $this->description = $description;
         $this->width = $width;
@@ -76,6 +86,7 @@ class TestItem implements Item, JsonSerializable
         $this->weight = $weight;
         $this->keepFlat = $keepFlat;
 
+        $this->volume = $this->width * $this->length * $this->depth;
         $this->a = new stdClass();
         $this->b = new stdClass();
 
@@ -83,32 +94,58 @@ class TestItem implements Item, JsonSerializable
         $this->b->a = $this->a;
     }
 
-    public function getDescription(): string
+    /**
+     * @return string
+     */
+    public function getDescription()
     {
         return $this->description;
     }
 
-    public function getWidth(): int
+    /**
+     * @return int
+     */
+    public function getWidth()
     {
         return $this->width;
     }
 
-    public function getLength(): int
+    /**
+     * @return int
+     */
+    public function getLength()
     {
         return $this->length;
     }
 
-    public function getDepth(): int
+    /**
+     * @return int
+     */
+    public function getDepth()
     {
         return $this->depth;
     }
 
-    public function getWeight(): int
+    /**
+     * @return int
+     */
+    public function getWeight()
     {
         return $this->weight;
     }
 
-    public function getKeepFlat(): bool
+    /**
+     * @return int
+     */
+    public function getVolume()
+    {
+        return $this->volume;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getKeepFlat()
     {
         return $this->keepFlat;
     }

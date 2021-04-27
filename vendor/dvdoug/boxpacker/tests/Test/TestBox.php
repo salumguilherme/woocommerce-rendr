@@ -4,7 +4,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
 
 namespace DVDoug\BoxPacker\Test;
 
@@ -59,18 +58,33 @@ class TestBox implements Box, JsonSerializable
     private $maxWeight;
 
     /**
+     * @var int
+     */
+    private $innerVolume;
+
+    /**
      * TestBox constructor.
+     *
+     * @param string $reference
+     * @param int    $outerWidth
+     * @param int    $outerLength
+     * @param int    $outerDepth
+     * @param int    $emptyWeight
+     * @param int    $innerWidth
+     * @param int    $innerLength
+     * @param int    $innerDepth
+     * @param int    $maxWeight
      */
     public function __construct(
-        string $reference,
-        int $outerWidth,
-        int $outerLength,
-        int $outerDepth,
-        int $emptyWeight,
-        int $innerWidth,
-        int $innerLength,
-        int $innerDepth,
-        int $maxWeight
+        $reference,
+        $outerWidth,
+        $outerLength,
+        $outerDepth,
+        $emptyWeight,
+        $innerWidth,
+        $innerLength,
+        $innerDepth,
+        $maxWeight
     ) {
         $this->reference = $reference;
         $this->outerWidth = $outerWidth;
@@ -81,49 +95,85 @@ class TestBox implements Box, JsonSerializable
         $this->innerLength = $innerLength;
         $this->innerDepth = $innerDepth;
         $this->maxWeight = $maxWeight;
+        $this->innerVolume = $this->innerWidth * $this->innerLength * $this->innerDepth;
     }
 
-    public function getReference(): string
+    /**
+     * @return string
+     */
+    public function getReference()
     {
         return $this->reference;
     }
 
-    public function getOuterWidth(): int
+    /**
+     * @return int
+     */
+    public function getOuterWidth()
     {
         return $this->outerWidth;
     }
 
-    public function getOuterLength(): int
+    /**
+     * @return int
+     */
+    public function getOuterLength()
     {
         return $this->outerLength;
     }
 
-    public function getOuterDepth(): int
+    /**
+     * @return int
+     */
+    public function getOuterDepth()
     {
         return $this->outerDepth;
     }
 
-    public function getEmptyWeight(): int
+    /**
+     * @return int
+     */
+    public function getEmptyWeight()
     {
         return $this->emptyWeight;
     }
 
-    public function getInnerWidth(): int
+    /**
+     * @return int
+     */
+    public function getInnerWidth()
     {
         return $this->innerWidth;
     }
 
-    public function getInnerLength(): int
+    /**
+     * @return int
+     */
+    public function getInnerLength()
     {
         return $this->innerLength;
     }
 
-    public function getInnerDepth(): int
+    /**
+     * @return int
+     */
+    public function getInnerDepth()
     {
         return $this->innerDepth;
     }
 
-    public function getMaxWeight(): int
+    /**
+     * @return int
+     */
+    public function getInnerVolume()
+    {
+        return $this->innerVolume;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxWeight()
     {
         return $this->maxWeight;
     }

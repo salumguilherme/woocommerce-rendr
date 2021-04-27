@@ -4,23 +4,23 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\ConstrainedPlacementByCountTestItem;
-use DVDoug\BoxPacker\Test\LimitedSupplyTestBox;
 use DVDoug\BoxPacker\Test\TestBox;
 use DVDoug\BoxPacker\Test\TestItem;
-use function iterator_to_array;
-use const PHP_INT_MAX;
 use PHPUnit\Framework\TestCase;
 
 class PackerTest extends TestCase
 {
-    public function testPackThreeItemsOneDoesntFitInAnyBox(): void
+    /**
+     * @expectedException \DVDoug\BoxPacker\ItemTooLargeException
+     */
+    public function testPackThreeItemsOneDoesntFitInAnyBox()
     {
-        $this->expectException(ItemTooLargeException::class);
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('\DVDoug\BoxPacker\ItemTooLargeException');
+        }
         $box1 = new TestBox('Le petite box', 300, 300, 10, 10, 296, 296, 8, 1000);
         $box2 = new TestBox('Le grande box', 3000, 3000, 100, 100, 2960, 2960, 80, 10000);
 
@@ -37,9 +37,14 @@ class PackerTest extends TestCase
         $packer->pack();
     }
 
-    public function testPackWithoutBox(): void
+    /**
+     * @expectedException \DVDoug\BoxPacker\ItemTooLargeException
+     */
+    public function testPackWithoutBox()
     {
-        $this->expectException(ItemTooLargeException::class);
+        if (method_exists($this, 'expectException')) {
+            $this->expectException('\DVDoug\BoxPacker\ItemTooLargeException');
+        }
         $item1 = new TestItem('Item 1', 2500, 2500, 20, 2000, true);
         $item2 = new TestItem('Item 2', 25000, 2500, 20, 2000, true);
         $item3 = new TestItem('Item 3', 2500, 2500, 20, 2000, true);
@@ -54,7 +59,7 @@ class PackerTest extends TestCase
     /**
      * Test weight distribution getter/setter.
      */
-    public function testCanSetMaxBoxesToWeightBalance(): void
+    public function testCanSetMaxBoxesToWeightBalance()
     {
         $packer = new Packer();
         $packer->setMaxBoxesToBalanceWeight(3);
@@ -64,7 +69,7 @@ class PackerTest extends TestCase
     /**
      * Test that weight redistribution activates (or not) correctly based on the current limit.
      */
-    public function testWeightRedistributionActivatesOrNot(): void
+    public function testWeightRedistributionActivatesOrNot()
     {
         // first pack normally - expecting 2+2 after balancing
 
@@ -94,7 +99,7 @@ class PackerTest extends TestCase
     /**
      * Test used width calculations on a case where it used to fail.
      */
-    public function testIssue52A(): void
+    public function testIssue52A()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box', 100, 50, 50, 0, 100, 50, 50, 5000));
@@ -110,7 +115,7 @@ class PackerTest extends TestCase
     /**
      * Test used width calculations on a case where it used to fail.
      */
-    public function testIssue52B(): void
+    public function testIssue52B()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box', 370, 375, 60, 140, 364, 374, 40, 3000));
@@ -129,7 +134,7 @@ class PackerTest extends TestCase
     /**
      * Test used width calculations on a case where it used to fail.
      */
-    public function testIssue52C(): void
+    public function testIssue52C()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box', 230, 300, 240, 160, 230, 300, 240, 15000));
@@ -149,7 +154,7 @@ class PackerTest extends TestCase
     /**
      * Test case where last item algorithm picks a slightly inefficient box.
      */
-    public function testIssue117(): void
+    public function testIssue117()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box A', 36, 8, 3, 0, 36, 8, 3, 2));
@@ -166,7 +171,7 @@ class PackerTest extends TestCase
      * Where 2 perfectly filled boxes are a choice, need to ensure we pick the larger one or there is a cascading
      * failure of many small boxes instead of a few larger ones.
      */
-    public function testIssue38(): void
+    public function testIssue38()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box1', 2, 2, 2, 0, 2, 2, 2, 1000));
@@ -190,7 +195,7 @@ class PackerTest extends TestCase
     /**
      * From issue #168.
      */
-    public function testIssue168(): void
+    public function testIssue168()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Small', 85, 190, 230, 30, 85, 190, 230, 10000));
@@ -205,10 +210,24 @@ class PackerTest extends TestCase
     }
 
     /**
-     * From issue #182.
-     * @group efficiency
+     * From issue #170.
      */
-    public function testIssue182A(): void
+    public function testIssue170()
+    {
+        $packer = new Packer();
+        $packer->addBox(new TestBox('Box', 170, 120, 120, 2000, 170, 120, 120, 60000));
+        $packer->addItem(new TestItem('Item', 70, 130, 2, 657, false), 100);
+
+        /** @var PackedBox[] $packedBoxes */
+        $packedBoxes = iterator_to_array($packer->pack(), false);
+
+        self::assertCount(2, $packedBoxes);
+    }
+
+    /**
+     * From issue #182.
+     */
+    public function testIssue182A()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box', 410, 310, 310, 2000, 410, 310, 310, 60000));
@@ -228,70 +247,9 @@ class PackerTest extends TestCase
     }
 
     /**
-     * Test that unlimited supply boxes are handled correctly.
-     */
-    public function testUnlimitedSupplyBox(): void
-    {
-        $packer = new Packer();
-        $packer->addBox(new TestBox('Light box', 100, 100, 100, 1, 100, 100, 100, 100));
-        $packer->addBox(new TestBox('Heavy box', 100, 100, 100, 100, 100, 100, 100, 10000));
-
-        $packer->addItem(new TestItem('Item', 100, 100, 100, 75, false), 3);
-
-        /** @var PackedBox[] $packedBoxes */
-        $packedBoxes = iterator_to_array($packer->pack(), false);
-
-        self::assertCount(3, $packedBoxes);
-        self::assertEquals('Light box', $packedBoxes[0]->getBox()->getReference());
-        self::assertEquals('Light box', $packedBoxes[1]->getBox()->getReference());
-        self::assertEquals('Light box', $packedBoxes[2]->getBox()->getReference());
-    }
-
-    /**
-     * Test that limited supply boxes are handled correctly.
-     */
-    public function testLimitedSupplyBox(): void
-    {
-        // as above, but limit light box to quantity 2
-        $packer = new Packer();
-        $packer->addBox(new LimitedSupplyTestBox('Light box', 100, 100, 100, 1, 100, 100, 100, 100, 2));
-        $packer->addBox(new TestBox('Heavy box', 100, 100, 100, 100, 100, 100, 100, 10000));
-
-        $packer->addItem(new TestItem('Item', 100, 100, 100, 75, false), 3);
-
-        /** @var PackedBox[] $packedBoxes */
-        $packedBoxes = iterator_to_array($packer->pack(), false);
-
-        self::assertCount(3, $packedBoxes);
-        self::assertEquals('Light box', $packedBoxes[0]->getBox()->getReference());
-        self::assertEquals('Light box', $packedBoxes[1]->getBox()->getReference());
-        self::assertEquals('Heavy box', $packedBoxes[2]->getBox()->getReference());
-    }
-
-    /**
-     * Test that limited supply boxes are handled correctly.
-     */
-    public function testNotEnoughLimitedSupplyBox(): void
-    {
-        // as above, but remove heavy box as an option
-        $this->expectException(NoBoxesAvailableException::class);
-        $packer = new Packer();
-        $packer->addBox(new LimitedSupplyTestBox('Light box', 100, 100, 100, 1, 100, 100, 100, 100, 2));
-        $packer->addItem(new TestItem('Item', 100, 100, 100, 75, false), 3);
-
-        /** @var PackedBox[] $packedBoxes */
-        $packedBoxes = iterator_to_array($packer->pack(), false);
-
-        self::assertCount(3, $packedBoxes);
-        self::assertEquals('Light box', $packedBoxes[0]->getBox()->getReference());
-        self::assertEquals('Light box', $packedBoxes[1]->getBox()->getReference());
-        self::assertEquals('Heavy box', $packedBoxes[2]->getBox()->getReference());
-    }
-
-    /**
      * From issue #191.
      */
-    public function testIssue191(): void
+    public function testIssue191()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('B 1', 400, 300, 200, 10, 400, 300, 200, 1000));
@@ -324,7 +282,7 @@ class PackerTest extends TestCase
     /**
      * From issue #192.
      */
-    public function testIssue192(): void
+    public function testIssue192()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box', 400, 300, 200, 10, 400, 300, 200, 1000));
@@ -370,7 +328,7 @@ class PackerTest extends TestCase
     /**
      * From issue #196.
      */
-    public function testIssue196(): void
+    public function testIssue196()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('[Box]', 360, 620, 370, 1, 360, 620, 370, 29000));
@@ -390,9 +348,8 @@ class PackerTest extends TestCase
 
     /**
      * From PR #198, tests with an atypically large number of boxes.
-     * @group efficiency
      */
-    public function testNumberOfBoxesTorture(): void
+    public function testNumberOfBoxesTorture()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('W10 - Plain Box 24x14x9.5', 1400, 2400, 950, 1000, 1400, 2400, 950, 60000));
@@ -546,7 +503,7 @@ class PackerTest extends TestCase
         self::assertCount(6, $packedBoxList);
     }
 
-    public function testIssue206(): void
+    public function testIssue206()
     {
         ConstrainedPlacementByCountTestItem::$limit = 2;
         $packer = new Packer();

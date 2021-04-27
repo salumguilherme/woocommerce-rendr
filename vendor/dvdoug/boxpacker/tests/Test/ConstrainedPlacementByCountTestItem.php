@@ -4,17 +4,12 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker\Test;
 
-use function array_filter;
-use function count;
 use DVDoug\BoxPacker\Box;
 use DVDoug\BoxPacker\ConstrainedPlacementItem;
 use DVDoug\BoxPacker\PackedItem;
 use DVDoug\BoxPacker\PackedItemList;
-use function iterator_to_array;
 
 class ConstrainedPlacementByCountTestItem extends TestItem implements ConstrainedPlacementItem
 {
@@ -25,17 +20,27 @@ class ConstrainedPlacementByCountTestItem extends TestItem implements Constraine
 
     /**
      * Hook for user implementation of item-specific constraints, e.g. max <x> batteries per box.
+     *
+     * @param  Box            $box
+     * @param  PackedItemList $alreadyPackedItems
+     * @param  int            $proposedX
+     * @param  int            $proposedY
+     * @param  int            $proposedZ
+     * @param  int            $width
+     * @param  int            $length
+     * @param  int            $depth
+     * @return bool
      */
     public function canBePacked(
         Box $box,
         PackedItemList $alreadyPackedItems,
-        int $proposedX,
-        int $proposedY,
-        int $proposedZ,
-        int $width,
-        int $length,
-        int $depth
-    ): bool {
+        $proposedX,
+        $proposedY,
+        $proposedZ,
+        $width,
+        $length,
+        $depth
+    ) {
         $alreadyPackedType = array_filter(
             iterator_to_array($alreadyPackedItems, false),
             function (PackedItem $item) {

@@ -4,14 +4,11 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\ConstrainedPlacementNoStackingTestItem;
 use DVDoug\BoxPacker\Test\TestBox;
 use DVDoug\BoxPacker\Test\TestItem;
-use function iterator_to_array;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,7 +19,7 @@ class WeightRedistributorTest extends TestCase
     /**
      * Test that a native 3+1 is repacked into 2+2.
      */
-    public function testWeightRedistributionActivatesOrNot(): void
+    public function testWeightRedistributionActivatesOrNot()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box', 1, 1, 3, 0, 1, 1, 3, 3));
@@ -38,7 +35,7 @@ class WeightRedistributorTest extends TestCase
     /**
      * From issue #166.
      */
-    public function testIssue166(): void
+    public function testIssue166()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Pallet', 42, 42, 42, 0, 42, 42, 42, 1120));
@@ -53,7 +50,7 @@ class WeightRedistributorTest extends TestCase
         self::assertCount(28, $packedBoxes[2]->getItems());
     }
 
-    public function testWeightDistributionWorks(): void
+    public function testWeightDistributionWorks()
     {
         $packer = new Packer();
         $packer->addBox(new TestBox('Box', 370, 375, 60, 140, 364, 374, 40, 3000));

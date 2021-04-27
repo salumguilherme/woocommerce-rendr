@@ -4,8 +4,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\TestBox;
@@ -20,7 +18,7 @@ class PackedBoxListTest extends TestCase
     /**
      * Test that inserting individually correctly works.
      */
-    public function testInsertAndCount(): void
+    public function testInsertAndCount()
     {
         $box = new TestBox('Box', 10, 10, 10, 0, 10, 10, 10, 100);
         $itemA = new TestItem('Item A', 5, 10, 10, 10, true);
@@ -31,11 +29,11 @@ class PackedBoxListTest extends TestCase
 
         $packedItemListA = new PackedItemList();
         $packedItemListA->insert($packedItemA);
-        $packedBoxA = new PackedBox($box, $packedItemListA);
+        $packedBoxA = PackedBox::fromPackedItemList($box, $packedItemListA);
 
         $packedItemListB = new PackedItemList();
         $packedItemListB->insert($packedItemB);
-        $packedBoxB = new PackedBox($box, $packedItemListB);
+        $packedBoxB = PackedBox::fromPackedItemList($box, $packedItemListB);
 
         $packedBoxList = new PackedBoxList();
         $packedBoxList->insert($packedBoxA);
@@ -47,7 +45,7 @@ class PackedBoxListTest extends TestCase
     /**
      * Test that inserting in bulk correctly works.
      */
-    public function testInsertFromArrayAndCount(): void
+    public function testInsertFromArrayAndCount()
     {
         $box = new TestBox('Box', 10, 10, 10, 0, 10, 10, 10, 100);
         $itemA = new TestItem('Item A', 5, 10, 10, 10, true);
@@ -58,11 +56,11 @@ class PackedBoxListTest extends TestCase
 
         $packedItemListA = new PackedItemList();
         $packedItemListA->insert($packedItemA);
-        $packedBoxA = new PackedBox($box, $packedItemListA);
+        $packedBoxA = PackedBox::fromPackedItemList($box, $packedItemListA);
 
         $packedItemListB = new PackedItemList();
         $packedItemListB->insert($packedItemB);
-        $packedBoxB = new PackedBox($box, $packedItemListB);
+        $packedBoxB = PackedBox::fromPackedItemList($box, $packedItemListB);
 
         $packedBoxList = new PackedBoxList();
         $packedBoxList->insertFromArray([$packedBoxA, $packedBoxB]);
@@ -73,7 +71,7 @@ class PackedBoxListTest extends TestCase
     /**
      * Test we can peek at the "top" (next) item in the list.
      */
-    public function testTop(): void
+    public function testTop()
     {
         $box = new TestBox('Box', 10, 10, 10, 0, 10, 10, 10, 100);
         $itemA = new TestItem('Item A', 5, 10, 10, 10, true);
@@ -84,11 +82,11 @@ class PackedBoxListTest extends TestCase
 
         $packedItemListA = new PackedItemList();
         $packedItemListA->insert($packedItemA);
-        $packedBoxA = new PackedBox($box, $packedItemListA);
+        $packedBoxA = PackedBox::fromPackedItemList($box, $packedItemListA);
 
         $packedItemListB = new PackedItemList();
         $packedItemListB->insert($packedItemB);
-        $packedBoxB = new PackedBox($box, $packedItemListB);
+        $packedBoxB = PackedBox::fromPackedItemList($box, $packedItemListB);
 
         $packedBoxList = new PackedBoxList();
         $packedBoxList->insert($packedBoxA);
@@ -100,7 +98,7 @@ class PackedBoxListTest extends TestCase
     /**
      * Test that volume utilisation is correctly calculated.
      */
-    public function testVolumeUtilisation(): void
+    public function testVolumeUtilisation()
     {
         $box = new TestBox('Box', 10, 10, 10, 0, 10, 10, 10, 10);
         $item = new TestItem('Item', 5, 10, 10, 10, true);
@@ -110,7 +108,7 @@ class PackedBoxListTest extends TestCase
         $packedItemList = new PackedItemList();
         $packedItemList->insert($packedItem);
 
-        $packedBox = new PackedBox($box, $packedItemList);
+        $packedBox = PackedBox::fromPackedItemList($box, $packedItemList);
 
         $packedBoxList = new PackedBoxList();
         $packedBoxList->insert($packedBox);
@@ -121,7 +119,7 @@ class PackedBoxListTest extends TestCase
     /**
      * Test that weight variance is correctly calculated.
      */
-    public function testWeightVariance(): void
+    public function testWeightVariance()
     {
         $box = new TestBox('Box', 10, 10, 10, 0, 10, 10, 10, 100);
         $itemA = new TestItem('Item A', 5, 10, 10, 10, true);
@@ -132,11 +130,11 @@ class PackedBoxListTest extends TestCase
 
         $packedItemListA = new PackedItemList();
         $packedItemListA->insert($packedItemA);
-        $packedBoxA = new PackedBox($box, $packedItemListA);
+        $packedBoxA = PackedBox::fromPackedItemList($box, $packedItemListA);
 
         $packedItemListB = new PackedItemList();
         $packedItemListB->insert($packedItemB);
-        $packedBoxB = new PackedBox($box, $packedItemListB);
+        $packedBoxB = PackedBox::fromPackedItemList($box, $packedItemListB);
 
         $packedBoxList = new PackedBoxList();
         $packedBoxList->insert($packedBoxA);
@@ -148,7 +146,7 @@ class PackedBoxListTest extends TestCase
     /**
      * Test that mean weight is correctly calculated.
      */
-    public function testMeanWeight(): void
+    public function testMeanWeight()
     {
         $box = new TestBox('Box', 10, 10, 10, 0, 10, 10, 10, 100);
         $itemA = new TestItem('Item A', 5, 10, 10, 10, true);
@@ -159,11 +157,11 @@ class PackedBoxListTest extends TestCase
 
         $packedItemListA = new PackedItemList();
         $packedItemListA->insert($packedItemA);
-        $packedBoxA = new PackedBox($box, $packedItemListA);
+        $packedBoxA = PackedBox::fromPackedItemList($box, $packedItemListA);
 
         $packedItemListB = new PackedItemList();
         $packedItemListB->insert($packedItemB);
-        $packedBoxB = new PackedBox($box, $packedItemListB);
+        $packedBoxB = PackedBox::fromPackedItemList($box, $packedItemListB);
 
         $packedBoxList = new PackedBoxList();
         $packedBoxList->insert($packedBoxA);

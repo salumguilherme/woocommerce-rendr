@@ -376,7 +376,7 @@
 				$same_day = true;
 			}
 
-			$now->modify('+1 hour');
+			$now->modify('+1 hour'); 
 
 			return $now;
 			
@@ -693,10 +693,10 @@
 					$_packedItems = $packedBox->getItems();
 					$packedItems = [];
 					foreach($_packedItems as $packedItem) {
-						if(!isset($packedItems[$packedItem->getItem()->getDescription()])) {
-							$packedItems[$packedItem->getItem()->getDescription()] = 1;
+						if(!isset($packedItems[$packedItem->getDescription()])) {
+							$packedItems[$packedItem->getDescription()] = 1;
 						} else {
-							$packedItems[$packedItem->getItem()->getDescription()]++;
+							$packedItems[$packedItem->getDescription()]++;
 						}
 					}
 					$packedItemsTitle = [];
@@ -816,7 +816,6 @@
 		private function get_package_rates($package) {
 			
 			$data = $this->get_package_rates_for_day($package);
-			echo '<pre>'; echo print_r($data, true);
 			$rates = [];
 
 			if(!empty($data['data'])) {
@@ -834,7 +833,6 @@
 			}
 
 			if(!empty($data['data'])) {
-				echo '<pre>'; echo print_r($data, true);
 				foreach($data['data'] as $delivery_type => $rate) {
 					if($this->get_instance_option('disable_'.$delivery_type) == 'yes') {
 						continue;

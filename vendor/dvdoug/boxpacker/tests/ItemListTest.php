@@ -4,12 +4,9 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\TestItem;
-use function iterator_to_array;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,7 +19,7 @@ class ItemListTest extends TestCase
      * - Largest (by volume) first
      * - If identical volume, sort by weight.
      */
-    public function testDimensionalSorting(): void
+    public function testDimensionalSorting()
     {
         $item1 = new TestItem('Small', 20, 20, 2, 100, true);
         $item2 = new TestItem('Large', 200, 200, 20, 1000, true);
@@ -43,7 +40,7 @@ class ItemListTest extends TestCase
      * Test that sorting of items with identical dimensions works as expected i.e.
      * - Items with the same name (i.e. same type) are kept together.
      */
-    public function testKeepingItemsOfSameTypeTogether(): void
+    public function testKeepingItemsOfSameTypeTogether()
     {
         $item1 = new TestItem('Item A', 20, 20, 2, 100, true);
         $item2 = new TestItem('Item B', 20, 20, 2, 100, true);
@@ -63,7 +60,7 @@ class ItemListTest extends TestCase
     /**
      * Test that we can retrieve an accurate count of items in the list.
      */
-    public function testCount(): void
+    public function testCount()
     {
         $itemList = new ItemList();
         self::assertCount(0, $itemList);
@@ -84,7 +81,7 @@ class ItemListTest extends TestCase
     /**
      * Test we can peek at the "top" (next) item in the list.
      */
-    public function testTop(): void
+    public function testTop()
     {
         $itemList = new ItemList();
         $item1 = new TestItem('Item A', 20, 20, 2, 100, true);
@@ -97,7 +94,7 @@ class ItemListTest extends TestCase
     /**
      * Test that we can retrieve an accurate count of items in the list.
      */
-    public function testTopN(): void
+    public function testTopN()
     {
         $itemList = new ItemList();
 
@@ -120,7 +117,7 @@ class ItemListTest extends TestCase
     /**
      * Test we can retrieve the "top" (next) item in the list.
      */
-    public function testExtract(): void
+    public function testExtract()
     {
         $itemList = new ItemList();
         $item1 = new TestItem('Item A', 20, 20, 2, 100, true);

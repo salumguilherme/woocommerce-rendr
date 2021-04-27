@@ -4,8 +4,6 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 /**
@@ -52,8 +50,16 @@ class PackedItem
 
     /**
      * PackedItem constructor.
+     *
+     * @param Item $item
+     * @param int  $x
+     * @param int  $y
+     * @param int  $z
+     * @param int  $width
+     * @param int  $length
+     * @param int  $depth
      */
-    public function __construct(Item $item, int $x, int $y, int $z, int $width, int $length, int $depth)
+    public function __construct(Item $item, $x, $y, $z, $width, $length, $depth)
     {
         $this->item = $item;
         $this->x = $x;
@@ -64,50 +70,79 @@ class PackedItem
         $this->depth = $depth;
     }
 
-    public function getX(): int
+    /**
+     * @return int
+     */
+    public function getX()
     {
         return $this->x;
     }
 
-    public function getY(): int
+    /**
+     * @return int
+     */
+    public function getY()
     {
         return $this->y;
     }
 
-    public function getZ(): int
+    /**
+     * @return int
+     */
+    public function getZ()
     {
         return $this->z;
     }
 
-    public function getItem(): Item
+    /**
+     * @return Item
+     */
+    public function getItem()
     {
         return $this->item;
     }
 
-    public function getWidth(): int
+    /**
+     * @return int
+     */
+    public function getWidth()
     {
         return $this->width;
     }
 
-    public function getLength(): int
+    /**
+     * @return int
+     */
+    public function getLength()
     {
         return $this->length;
     }
 
-    public function getDepth(): int
+    /**
+     * @return int
+     */
+    public function getDepth()
     {
         return $this->depth;
     }
 
-    public function getVolume(): int
+    /**
+     * @return int
+     */
+    public function getVolume()
     {
         return $this->width * $this->length * $this->depth;
     }
 
     /**
+     * @param OrientatedItem $orientatedItem
+     * @param int            $x
+     * @param int            $y
+     * @param int            $z
+     *
      * @return PackedItem
      */
-    public static function fromOrientatedItem(OrientatedItem $orientatedItem, int $x, int $y, int $z): self
+    public static function fromOrientatedItem(OrientatedItem $orientatedItem, $x, $y, $z)
     {
         return new static(
             $orientatedItem->getItem(),
@@ -120,7 +155,10 @@ class PackedItem
         );
     }
 
-    public function toOrientatedItem(): OrientatedItem
+    /**
+     * @return OrientatedItem
+     */
+    public function toOrientatedItem()
     {
         return new OrientatedItem($this->item, $this->width, $this->length, $this->depth);
     }

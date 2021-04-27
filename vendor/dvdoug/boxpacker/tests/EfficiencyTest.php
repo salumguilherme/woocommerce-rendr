@@ -4,15 +4,10 @@
  *
  * @author Doug Wright
  */
-declare(strict_types=1);
-
 namespace DVDoug\BoxPacker;
 
 use DVDoug\BoxPacker\Test\TestBox;
 use DVDoug\BoxPacker\Test\TestItem;
-use function fclose;
-use function fgetcsv;
-use function fopen;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,7 +29,7 @@ class EfficiencyTest extends TestCase
         $expectedWeightVariance3D,
         $expectedVolumeUtilisation2D,
         $expectedVolumeUtilisation3D
-    ): void {
+    ) {
         $expectedItemCount = 0;
 
         $packer2D = new Packer();
@@ -75,12 +70,12 @@ class EfficiencyTest extends TestCase
         $packedBoxes3D = $packer3D->pack();
 
         $packedItemCount2D = 0;
-        foreach ($packedBoxes2D as $packedBox) {
+        foreach (clone $packedBoxes2D as $packedBox) {
             $packedItemCount2D += $packedBox->getItems()->count();
         }
 
         $packedItemCount3D = 0;
-        foreach ($packedBoxes3D as $packedBox) {
+        foreach (clone $packedBoxes3D as $packedBox) {
             $packedItemCount3D += $packedBox->getItems()->count();
         }
 
