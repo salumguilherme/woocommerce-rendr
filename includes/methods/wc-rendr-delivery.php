@@ -371,15 +371,16 @@
 				while($now->format('N') >= 6) {
 					$now->modify('+1 day');
 				}
+				$now = new \DateTime($now->format('Y-m-d').' 10:00:00', new \DateTimeZone(get_option('timezone_string')));
 				$same_day = false;
 			} else {
 				$same_day = true;
 			}
 
-			$now->modify('+1 hour'); 
+			$now->modify('+30 minutes');
 
 			return $now;
-			
+
 			$c = 0;
 			// while day is not available or if day is available but we are past the closing time or  -> try the following day
 			while(empty($this->settings['opening_hours'][strtolower($now->format('l'))])
@@ -426,9 +427,9 @@
 			} catch(\Exception $e) {
 				$presets = [];
 			}
-			
+
 			return $presets;
-			
+
 		}
 
 		/**
@@ -458,14 +459,15 @@
 		 * @throws \Exception
 		 */
 		private function get_auth_token() {
-			
+
+
 			if(($token = get_transient('wcvrendr_auth_token')) != false) {
 				return $token;
 			}
 			if(empty($this->get_option('client_id')) || empty($this->get_option('client_secret'))) {
 				throw new \Exception('Empty or invalid credentials.');
 			}
-			
+
 			$request = wp_remote_post($this->get_endpoint('/auth/token'), [
 				'headers' => [
 					'Content-Type' => 'application/json',
@@ -481,17 +483,17 @@
 			if(wp_remote_retrieve_response_code($request) != 200) {
 				throw new \Exception('Error retrieving authorization code. Message: '.wp_remote_retrieve_response_message($request));
 			}
-			
+
 			$body = json_decode(wp_remote_retrieve_body($request), true);
-			
+
 			if(empty($body['data']['access_token'])) {
 				throw new \Exception('Error retrieving authorization code.');
 			}
-			
+
 			set_transient('wcvrendr_auth_token', $body['data']['access_token'], HOUR_IN_SECONDS);
-			
+
 			return $body['data']['access_token'];
-			
+
 		}
 
 		/**
@@ -505,22 +507,22 @@
 		 * @return array
 		 */
 		private function get_package_line_items($package) {
-			
+
 			$items = [];
-			
+
 			foreach($package['contents'] as $key => $item) {
-				
+
 				$items[] = [
 					'code' => $item['data']->get_sku(),
 					'name' => $item['data']->get_name(),
 					'price_cents' => round($item['line_total']*100),
 					'quantity' => $item['quantity'],
 				];
-				
+
 			}
-			
+
 			return $items;
-			
+
 		}
 
 		/**
@@ -568,19 +570,19 @@
 			$parcels = [];
 
 			if($this->get_option('packing_preference') == 'together') {
-				
+
 				$parcel_w = 0;
 				$parcel_h = 0;
 				$parcel_l = 0;
 				$parcel_weight = 0;
-				
+
 				foreach($package['contents'] as $i => $lineitem) {
-					
+
 					$height = (int)$this->get_item_shipping_attribute($lineitem, 'height');
 					$width = (int)$this->get_item_shipping_attribute($lineitem, 'width');
 					$length = (int)$this->get_item_shipping_attribute($lineitem, 'length');
 					$weight = (float)$this->get_item_shipping_attribute($lineitem, 'weight');
-					
+
 					if($i === 0) {
 						$parcel_h = $height;
 						$parcel_l = $length;
@@ -596,13 +598,13 @@
 						}
 						$parcel_weight += $weight;
 					}
-					
+
 				}
-				
+
 				if($parcel_weight < 1) {
 					$parcel_weight = 1;
 				}
-				
+
 				$parcels[] = [
 					'reference' => "Parcel #0001",
 					'description' => '',
@@ -612,17 +614,17 @@
 					'weight_kg' => (int)$parcel_weight,
 					'quantity' => 1,
 				];
- 
+
 			} else if($this->get_option('packing_preference') == 'separate') {
 				$i2 = 1;
 				foreach($package['contents'] as $i => $lineitem) {
-					
+
 					$height = (int)$this->get_item_shipping_attribute($lineitem, 'height');
 					$width = (int)$this->get_item_shipping_attribute($lineitem, 'width');
 					$length = (int)$this->get_item_shipping_attribute($lineitem, 'length');
 					$weight = (float)$this->get_item_shipping_attribute($lineitem, 'weight') < 1 ? 1 : (float)$this->get_item_shipping_attribute($lineitem, 'weight');
-					
-					
+
+
 					$parcels[] = [
 						'reference' => "Parcel #".str_pad($i2, 4, '0', STR_PAD_LEFT),
 						'description' => 'Contents: '.$lineitem['data']->get_name(),
@@ -693,10 +695,10 @@
 					$_packedItems = $packedBox->getItems();
 					$packedItems = [];
 					foreach($_packedItems as $packedItem) {
-						if(!isset($packedItems[$packedItem->getDescription()])) {
-							$packedItems[$packedItem->getDescription()] = 1;
+						if(!isset($packedItems[$packedItem->getItem()->getDescription()])) {
+							$packedItems[$packedItem->getItem()->getDescription()] = 1;
 						} else {
-							$packedItems[$packedItem->getDescription()]++;
+							$packedItems[$packedItem->getItem()->getDescription()]++;
 						}
 					}
 					$packedItemsTitle = [];
@@ -750,9 +752,9 @@
 			if(empty($package['destination']['postcode'])) {
 				throw new \Exception('Cannot calculate postage. postcode empty.');
 			}
-			
+
 			return true;
-			
+
 		}
 
 				/**
@@ -788,6 +790,7 @@
 				'timeout' => 10000,
 			]);
 
+
 			if(wp_remote_retrieve_response_code($request) != 200) {
 				throw new \Exception('Invalid response code when fetching available rates.');
 			}
@@ -795,7 +798,8 @@
 			$data = json_decode(wp_remote_retrieve_body($request), true);
 
 			if(empty($data) || empty($data['data'])) {
-				throw new \Exception('Empty response received when fetching available rates');
+				//throw new \Exception('Empty response received when fetching available rates');
+				return [];
 			}
 
 			return $data;
@@ -814,7 +818,7 @@
 		 * @throws \Exception
 		 */
 		private function get_package_rates($package) {
-			
+
 			$data = $this->get_package_rates_for_day($package);
 			$rates = [];
 
@@ -833,6 +837,7 @@
 			}
 
 			if(!empty($data['data'])) {
+
 				foreach($data['data'] as $delivery_type => $rate) {
 					if($this->get_instance_option('disable_'.$delivery_type) == 'yes') {
 						continue;
