@@ -712,7 +712,7 @@
 						'length_cm' => (int)$packedBox->getBox()->getOuterLength(),
 						'height_cm' => (int)$packedBox->getBox()->getOuterDepth(),
 						'width_cm' => (int)$packedBox->getBox()->getOuterWidth(),
-						'weight_kg' => (int)($packedBox->getWeight()),
+						'weight_kg' => (int)($packedBox->getWeight()) < 1 ? 1 : (int)($packedBox->getWeight()),
 						'quantity' => 1,
 					];
 
@@ -789,8 +789,18 @@
 				]),
 				'timeout' => 10000,
 			]);
-
-
+echo '<pre>'; print_r([
+					'store_id' => $this->get_option('store_id'),
+					'ready_for_pickup_at' => $this->get_ready_pickup_date($day)->format('c'),
+					'address' => [
+						'city' => $package['destination']['city'],
+						'state' => $package['destination']['state'],
+						'post_code' => $package['destination']['postcode'],
+					],
+					'line_items' => $this->get_package_line_items($package),
+					'parcels' => $this->get_package_parcels($package),
+			]); echo '</pre>';
+echo '<pre>'; print_r(json_decode(wp_remote_retrieve_body($request), true)); echo '</pre>';
 			if(wp_remote_retrieve_response_code($request) != 200) {
 				throw new \Exception('Invalid response code when fetching available rates.');
 			}
