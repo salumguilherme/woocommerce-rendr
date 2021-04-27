@@ -376,6 +376,8 @@
 				$same_day = true;
 			}
 
+			$now->modify('+1 hour');
+
 			return $now;
 			
 			$c = 0;
