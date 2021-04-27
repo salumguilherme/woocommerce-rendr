@@ -3,9 +3,9 @@
 	Plugin Name: Rendr Delivery for Woocommerce
 	Plugin URI: https://rendr.delivery
 	Description: Offer Rendr Delivery to your customers.
-	Version: 1.1.4.1
-	Author: Guilherme Salum
-	Author URI: https://fivecreative.com.au
+	Version: 1.1.5
+	Author: Rendr
+	Author URI: https://rendr.delivery
 	Requires at least: 5.2
     Requires PHP:      5.6
 	Text Domain:       wcrendr
@@ -18,7 +18,7 @@
 	}
 
 	// Constants
-	define('WCRENDR_VERSION', '1.1.4.1');
+	define('WCRENDR_VERSION', '1.1.5');
 	define('WCRENDR_DIR', rtrim(plugin_dir_path(__FILE__), "/"));
 	define('WCRENDR_URL', rtrim(plugin_dir_url(__FILE__), "/"));
 
