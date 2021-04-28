@@ -513,7 +513,7 @@
 			foreach($package['contents'] as $key => $item) {
 
 				$items[] = [
-					'code' => $item['data']->get_sku(),
+					'code' => empty($item['data']->get_sku()) ? 'DEFAULTSKU'.substr(md5(time()), 0, 8) : $item['data']->get_sku(),
 					'name' => $item['data']->get_name(),
 					'price_cents' => round($item['line_total']*100),
 					'quantity' => $item['quantity'],
@@ -830,8 +830,10 @@
 				}
 			}
 
-			if(count($rates) <= 1) {
+			if(count($data['data']) < 3) {
 				$data = $this->get_package_rates_for_day($package, true);
+			} else {
+				return $rates;
 			}
 
 			if(!empty($data['data'])) {
@@ -846,11 +848,11 @@
 					}
 				}
 			}
-			
+
 			return $rates;
-			
+
 		}
-		
+
 		public function request_delivery($order, $method_name, $method) {
 
 			/** @var \WC_Order_Item_Shipping $method */
@@ -867,7 +869,7 @@
 					'address_2' => $order->get_shipping_address_2(),
 				)
 	        );
-			
+
 			foreach($order->get_items() as $item) {
 			/** @var \WC_Order_Item_Product $item */
 				$package['contents'][] = [
@@ -877,7 +879,7 @@
 
 				];
 			}
-			
+
 			$type = '';
 			if($method_name == $this->label_fast) {
 				$type = 'fast';
@@ -886,7 +888,7 @@
 			} else {
 				$type = 'standard';
 			}
-			
+
 			try {
 
 				$request = wp_remote_post($this->get_endpoint('/deliveries'), [
