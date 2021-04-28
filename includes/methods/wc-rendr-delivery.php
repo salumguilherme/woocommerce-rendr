@@ -826,7 +826,7 @@
 						continue;
 					}
 					$rates[$delivery_type] = $rate;
-					$rates[$delivery_type]['ready_for_pickup'] = $this->get_ready_pickup_date();
+					$rates[$delivery_type]['ready_for_pickup'] = $this->get_ready_pickup_date()->format('c');
 				}
 			}
 
@@ -842,7 +842,7 @@
 					}
 					if(!isset($rates[$delivery_type])) {
 						$rates[$delivery_type] = $rate;
-						$rates[$delivery_type]['ready_for_pickup'] = $this->get_ready_pickup_date(true);
+						$rates[$delivery_type]['ready_for_pickup'] = $this->get_ready_pickup_date(true)->format('c');
 					}
 				}
 			}
