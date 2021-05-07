@@ -23,7 +23,7 @@
 		/**
 		 * @var Admin
 		 */
-		private $admin;
+		public $admin;
 
 		/**
 		 * @var Admin

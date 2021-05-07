@@ -114,21 +114,27 @@ However, we recommend setting the dimension and weight on a product level as you
 		'default_width' => [
 			'type' => 'number',
 			'title' => 'Default Width (cm)',
-			'default' => '',
+			'default' => '50',
 		],
 		'default_length' => [
 			'type' => 'number',
 			'title' => 'Default Length (cm)',
-			'default' => '',
+			'default' => '50',
 		],
 		'default_height' => [
 			'type' => 'number',
 			'title' => 'Default Height (cm)',
-			'default' => '',
+			'default' => '50',
 		],
 		'default_weight' => [
 			'type' => 'number',
 			'title' => 'Default Weight (kg)',
-			'default' => '',
+			'default' => '5',
+			'css' => 'margin-bottom:  40px;',
+		],
+		'disable_brand' => [
+			'type' => 'checkbox',
+			'label' => 'Avoid displaying delivery powered by Rendr wherever possible.',
+			'default' => 'off',
 		],
 	];

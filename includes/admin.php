@@ -17,6 +17,8 @@
 	 */
 	class Admin {
 
+		private $has_logo_displayed;
+
 		/**
 		 * Admin constructor.
 		 */
@@ -51,7 +53,39 @@
 			add_action('woocommerce_checkout_process', [$this, 'enforce_phone_number_length']);
 
 			add_action('woocommerce_admin_order_data_after_shipping_address', [$this, 'delivery_info_order_page']);
+			
+			add_action('woocommerce_review_order_before_submit', [$this, 'terms_and_conditions'], 1);
 
+			add_filter( 'woocommerce_shipping_calculator_enable_city', '__return_true' );
+
+		}
+		
+		public function terms_and_conditions() {
+
+			$has_rendr = false;
+
+			$chosen_method = isset($_POST['shipping_method']) ? $_POST['shipping_method'] : wc_get_chosen_shipping_method_ids();
+
+			foreach($chosen_method as $smethoid) {
+				if(strpos($smethoid, 'wcrendr') !== false) {
+					$has_rendr = true; break;
+				}
+			}
+
+			if($has_rendr) {
+				?>
+
+				<p class="form-row validate-required" style="margin-top: 1em">
+					<label class="woocommerce-form__label woocommerce-form__label-for-checkbox checkbox">
+						<input type="checkbox" class="woocommerce-form__input woocommerce-form__input-checkbox input-checkbox" name="terms_wcrendr" <?php checked(isset( $_POST['terms_wcrendr'] ) ); // WPCS: input var ok, csrf ok. ?> id="terms_wcrendr" />
+						<span class="woocommerce-terms-and-conditions-checkbox-text">By proceeding with Rendr Delivery, you grant Rendr an Authority To Leave (ATL) the goods in a safe place and agree Rendr bears no responsibility for any loss or damage that may occur. See <a href="https://rendr.delivery/pages/terms-and-conditions" target="_blank">full Terms & Conditions</a></span>&nbsp;<span class="required">*</span>
+					</label>
+					<input type="hidden" name="terms-field" value="1" />
+				</p>
+
+				<?php
+			}
+			
 		}
 
 		public function delivery_info_order_page($order) {
@@ -93,7 +127,7 @@
 			}
 		}
 
-		private function get_method() {
+		public function get_method() {
 			if(!isset($this->method)) {
 				$this->method = new WC_Rendr_Delivery();
 			}
