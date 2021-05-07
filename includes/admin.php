@@ -42,7 +42,6 @@
 			add_filter( 'manage_edit-shop_order_columns', [$this, 'column_delivery_status'] );
 
 			add_action( 'manage_shop_order_posts_custom_column', [$this, 'column_delivery_status_content'], 2 );
-			add_action( 'woocommerce_single_product_summary', [$this, 'delivered_by_rendr'], 40 );
 
 			add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
 
