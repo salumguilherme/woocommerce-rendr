@@ -98,7 +98,7 @@
 			];
 			$this->form_fields = include(WCRENDR_DIR.'/includes/methods/wc-rendr-delivery-settings.php');
 			$this->title = __('Rendr Delivery', 'wcrendr');
-			$this->tax_status = '';
+			$this->tax_status = 'taxable';
 			$this->label_fast = 'Rendr Fast';
 			$this->label_flexible = 'Rendr Flexible';
 			$this->label_standard = 'Rendr Standard';
@@ -550,7 +550,11 @@
 				throw new \Exception('Cannot calculate parcels. '.$attr.' is invalid.');
 			}
 
-			return $value;
+			if($attr == 'weight') {
+				return wc_get_weight($value, 'kg');
+			}
+
+			return wc_get_dimension($value, 'cm');
 
 		}
 
