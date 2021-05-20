@@ -515,7 +515,7 @@
 				$items[] = [
 					'code' => empty($item['data']->get_sku()) ? 'DEFAULTSKU'.substr(md5(time()), 0, 8) : $item['data']->get_sku(),
 					'name' => $item['data']->get_name(),
-					'price_cents' => round($item['line_total']*100),
+					'price_cents' => round(($item['line_total']/$item['quantity'])*100),
 					'quantity' => $item['quantity'],
 				];
 
